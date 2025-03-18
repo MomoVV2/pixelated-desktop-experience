@@ -256,8 +256,8 @@ const Index = () => {
   return (
     <div 
       className="h-screen w-full relative overflow-hidden" 
-      style={{ 
-        backgroundImage: 'url("/seoul-pixelated.jpg")', 
+      style={{
+        backgroundImage: 'url("https://i.postimg.cc/503v5zmK/seoul-pixelated.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         imageRendering: 'pixelated'
