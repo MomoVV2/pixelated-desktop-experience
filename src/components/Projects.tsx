@@ -40,10 +40,10 @@ const Projects: React.FC = () => {
             <span className="jp">開発者</span>{" "}
             <span className="ar">مطوّر</span>{" "}
           </span>
-          Developer showcase: My recent coding adventures
+          Soon.
         </p>
       </div>
-
+       {/* This is a comment in JSX 
       <div className="grid gap-4">
         {projects.map((project, index) => (
           <div 
@@ -84,9 +84,11 @@ const Projects: React.FC = () => {
                 Source Code
               </a>
             </div>
+          
           </div>
         ))}
       </div>
+      */}
     </div>
   );
 };

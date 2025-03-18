@@ -13,6 +13,8 @@ import {
   Cat,
   Coffee,
   Info,
+  Volleyball,
+  Disc3,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import AnimatedDesktopIcon from "@/components/AnimatedDesktopIcon";
@@ -62,12 +64,14 @@ const Index = () => {
       content: <Projects />,
       initialPosition: { x: 100, y: 100 },
     },
+ 
     aboutMe: {
       id: "aboutMe",
       title: "About Me",
       content: <AboutMe />,
       initialPosition: { x: 150, y: 120 },
     },
+       /*
     travel: {
       id: "travel",
       title: "Travel",
@@ -113,7 +117,7 @@ const Index = () => {
       content: (
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-white">Cat Corner</h2>
-          <p className="text-white/70">A space dedicated to my feline friends!</p>
+          <p className="text-white/70">A space about cats</p>
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3, 4].map((item) => (
               <div 
@@ -153,8 +157,8 @@ const Index = () => {
       content: <AboutSite />,
       initialPosition: { x: 200, y: 150 },
     },
+    */
   };
-
   // Function to open a window
   const openWindow = (id: string) => {
     if (!openWindows.includes(id)) {
@@ -184,7 +188,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-desktop-dark text-white p-6">
         <div className="max-w-md mx-auto">
-          <h1 className="text-2xl font-pixel mb-6 text-desktop-accent">My Personal Portfolio</h1>
+          <h1 className="text-2xl font-pixel mb-6 text-desktop-accent">Hey, im Momo - in development</h1>
           
           <div className="space-y-4">
             {Object.entries(allWindows).map(([id, window]) => (
@@ -210,21 +214,21 @@ const Index = () => {
           </div>
           
           <div className="mt-8 grid grid-cols-4 gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
-              <Github size={24} className="text-desktop-icon mb-1" />
-              <span className="text-xs">Github</span>
+          <a href="https://www.instagram.com/known.as.momo/?hl=de" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+              <Instagram size={24} className="text-desktop-icon mb-1" />
+              <span className="text-xs">Instagram</span>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
-              <Linkedin size={24} className="text-desktop-icon mb-1" />
-              <span className="text-xs">LinkedIn</span>
+            <a href="https://www.threads.net/@known.as.momo?hl=de" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+              <Volleyball size={24} className="text-desktop-icon mb-1" />
+              <span className="text-xs">Threads</span>
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+            <a href="https://x.com/knownasmomo?t=LkB7EG4enSiJrXnlkDvzJg" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
               <Twitter size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Twitter</span>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
-              <Instagram size={24} className="text-desktop-icon mb-1" />
-              <span className="text-xs">Instagram</span>
+            <a href="https://open.spotify.com/user/kv50zegc81fea4xvehno154xa?si=4c30fc1eef83477b" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+              <Disc3 size={24} className="text-desktop-icon mb-1" />
+              <span className="text-xs">Spotify</span>
             </a>
           </div>
           

@@ -16,7 +16,7 @@ const AboutMe: React.FC = () => {
             <span className="jp">こんにちは</span>{" "}
             <span className="ar">مرحباً</span>{" "}
           </span>
-          Hello! I'm a developer with diverse interests and multicultural background
+          Hey, im Momo this page is in development
         </p>
       </div>
 
@@ -25,7 +25,7 @@ const AboutMe: React.FC = () => {
           <MapPin className="text-desktop-accent mr-3 mt-1" size={16} />
           <div>
             <h3 className="font-medium">Location</h3>
-            <p className="text-white/70 text-sm">Seoul enthusiast</p>
+            <p className="text-white/70 text-sm">Unfortunately in Hamburg</p>
           </div>
         </div>
 
@@ -33,7 +33,7 @@ const AboutMe: React.FC = () => {
           <Mail className="text-desktop-accent mr-3 mt-1" size={16} />
           <div>
             <h3 className="font-medium">Contact</h3>
-            <p className="text-white/70 text-sm">developer@example.com</p>
+            <p className="text-white/70 text-sm">momo@momoh.de</p>
           </div>
         </div>
 
@@ -42,7 +42,11 @@ const AboutMe: React.FC = () => {
           <div>
             <h3 className="font-medium">Skills</h3>
             <div className="flex flex-wrap gap-2 mt-1">
-              {["JavaScript", "TypeScript", "React", "Node.js", "HTML/CSS"].map((skill, idx) => (
+            {[
+  "JavaScript", "TypeScript", "React", "Node.js", "HTML/CSS", "Python", "React Native",
+  "PHP", "Docker", "Terraform", "SQL",
+  "Playwright", "Svelte", "GraphQL"
+].map((skill, idx) => (
                 <span 
                   key={idx} 
                   className="text-xs bg-desktop-accent/20 text-desktop-accent px-2 py-1 rounded"
@@ -66,7 +70,7 @@ const AboutMe: React.FC = () => {
           <Coffee className="text-desktop-accent mr-3 mt-1" size={16} />
           <div>
             <h3 className="font-medium">Interests</h3>
-            <p className="text-white/70 text-sm">Coffee, Cats, Travel, Fashion (Ader Error, Maison Kitsune)</p>
+            <p className="text-white/70 text-sm">Coffee, Cats, Travel, Fashion</p>
           </div>
         </div>
       </div>

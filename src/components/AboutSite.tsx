@@ -4,6 +4,7 @@ import { Code, Cpu, Palette, Smile } from "lucide-react";
 
 const AboutSite: React.FC = () => {
   return (
+
     <div className="space-y-6 text-white">
       <div className="space-y-2">
         <div className="flex items-center">
@@ -14,8 +15,9 @@ const AboutSite: React.FC = () => {
           Welcome to my interactive pixelated desktop experience - a fusion of nostalgia and modern web development.
         </p>
       </div>
-
+                  
       <div className="grid gap-5">
+        {/* 
         <div className="flex items-start">
           <Code className="text-desktop-accent mr-3 mt-1" size={16} />
           <div>
@@ -57,9 +59,11 @@ const AboutSite: React.FC = () => {
             "The best interfaces are the ones that blend nostalgia with modern functionality."
           </p>
         </div>
+        This is a comment in JSX */}
       </div>
     </div>
   );
+  
 };
 
 export default AboutSite;
