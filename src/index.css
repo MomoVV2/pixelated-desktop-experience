@@ -48,7 +48,7 @@
   }
 
   .window {
-    @apply bg-desktop-window border border-desktop-border shadow-lg rounded-md overflow-hidden animate-window-open;
+    @apply bg-desktop-window border border-desktop-border shadow-lg rounded-md overflow-hidden;
   }
   
   .window-header {
@@ -87,6 +87,10 @@
     @apply px-3 py-1 bg-desktop-accent text-white rounded mr-2 font-pixel text-xs flex items-center;
   }
   
+  .start-button.active {
+    @apply bg-desktop-accent/80;
+  }
+  
   .taskbar-item {
     @apply h-8 px-3 flex items-center text-xs text-white/80 mx-1 rounded-sm transition-all duration-200;
   }
@@ -115,6 +119,19 @@
     @apply font-arabic;
   }
   
+  /* Typography animations */
+  .text-animated {
+    @apply relative overflow-hidden;
+  }
+  
+  .text-animated::after {
+    @apply content-[''] absolute bottom-0 left-0 w-full h-[2px] bg-desktop-accent transform scale-x-0 transition-transform duration-300 origin-bottom-right;
+  }
+  
+  .text-animated:hover::after {
+    @apply transform scale-x-100 origin-bottom-left;
+  }
+  
   /* Scrollbar styles */
   ::-webkit-scrollbar {
     @apply w-2;
@@ -130,5 +147,22 @@
   
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-desktop-accent;
+  }
+  
+  /* Animations */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
   }
 }

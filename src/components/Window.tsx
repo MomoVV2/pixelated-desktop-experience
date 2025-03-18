@@ -1,7 +1,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Minus, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface WindowProps {
   title: string;
@@ -10,6 +11,7 @@ interface WindowProps {
   children: React.ReactNode;
   initialPosition?: { x: number; y: number };
   className?: string;
+  onClick?: () => void;
 }
 
 const Window: React.FC<WindowProps> = ({
@@ -19,17 +21,22 @@ const Window: React.FC<WindowProps> = ({
   children,
   initialPosition = { x: 100, y: 100 },
   className,
+  onClick,
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [previousPosition, setPreviousPosition] = useState(initialPosition);
+  const [previousSize, setPreviousSize] = useState({ width: 600, height: 400 });
   const windowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
+      if (isDragging && !isMaximized) {
         setPosition({
           x: e.clientX - dragOffset.x,
           y: e.clientY - dragOffset.y,
@@ -48,10 +55,10 @@ const Window: React.FC<WindowProps> = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, dragOffset]);
+  }, [isDragging, dragOffset, isMaximized]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (windowRef.current) {
+    if (windowRef.current && !isMaximized) {
       const rect = windowRef.current.getBoundingClientRect();
       setDragOffset({
         x: e.clientX - rect.left,
@@ -59,29 +66,81 @@ const Window: React.FC<WindowProps> = ({
       });
       setIsDragging(true);
     }
+    
+    if (onClick) {
+      onClick();
+    }
+  };
+  
+  const handleMinimize = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMinimized(!isMinimized);
+  };
+  
+  const handleMaximize = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!isMaximized) {
+      setPreviousPosition({ ...position });
+      if (windowRef.current) {
+        const rect = windowRef.current.getBoundingClientRect();
+        setPreviousSize({ width: rect.width, height: rect.height });
+      }
+    }
+    
+    setIsMaximized(!isMaximized);
   };
 
   if (!isOpen) return null;
+  
+  if (isMinimized) return null;
 
   return (
-    <div
+    <motion.div
       ref={windowRef}
-      className={cn("window absolute z-10", className)}
+      className={cn("window absolute", className)}
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: "600px",
-        maxHeight: "80vh",
+        left: isMaximized ? 0 : `${position.x}px`,
+        top: isMaximized ? 0 : `${position.y}px`,
+        width: isMaximized ? "100%" : undefined,
+        height: isMaximized ? "calc(100vh - 48px)" : undefined,
+        maxHeight: isMaximized ? "calc(100vh - 48px)" : "80vh",
       }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClick}
     >
-      <div className="window-header" onMouseDown={handleMouseDown}>
+      <div 
+        className="window-header" 
+        onMouseDown={handleMouseDown}
+        onDoubleClick={handleMaximize}
+      >
         <h3 className="text-xs">{title}</h3>
-        <button onClick={onClose} className="focus:outline-none">
-          <X size={16} />
-        </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleMinimize} 
+            className="focus:outline-none hover:bg-white/10 p-0.5 rounded"
+          >
+            <Minus size={12} />
+          </button>
+          <button 
+            onClick={handleMaximize} 
+            className="focus:outline-none hover:bg-white/10 p-0.5 rounded"
+          >
+            <Square size={12} />
+          </button>
+          <button 
+            onClick={onClose} 
+            className="focus:outline-none hover:bg-red-500/80 p-0.5 rounded"
+          >
+            <X size={12} />
+          </button>
+        </div>
       </div>
       <div className="window-content">{children}</div>
-    </div>
+    </motion.div>
   );
 };
 
