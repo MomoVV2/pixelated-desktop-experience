@@ -321,31 +321,31 @@ const Index = () => {
       {/* Social Media Icons */}
       <div className="absolute top-6 right-6 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
         <motion.a 
-          href="https://github.com" 
+          href="https://www.threads.net/@known.as.momo?hl=de" 
           target="_blank" 
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <div className="desktop-icon">
-            <Github size={32} className="text-desktop-icon" />
+            <Volleyball size={32} className="text-desktop-icon" />
             <div className="desktop-icon-text">Github</div>
           </div>
         </motion.a>
         <motion.a 
-          href="https://linkedin.com" 
+          href="https://open.spotify.com/user/kv50zegc81fea4xvehno154xa?si=4c30fc1eef83477b" 
           target="_blank" 
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <div className="desktop-icon">
-            <Linkedin size={32} className="text-desktop-icon" />
-            <div className="desktop-icon-text">LinkedIn</div>
+            <Disc3 size={32} className="text-desktop-icon" />
+            <div className="desktop-icon-text">Spotify</div>
           </div>
         </motion.a>
         <motion.a 
-          href="https://twitter.com" 
+          href="https://x.com/knownasmomo?t=LkB7EG4enSiJrXnlkDvzJg" 
           target="_blank" 
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}
@@ -357,7 +357,7 @@ const Index = () => {
           </div>
         </motion.a>
         <motion.a 
-          href="https://instagram.com" 
+          href="https://www.instagram.com/known.as.momo/?hl=de" 
           target="_blank" 
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}
