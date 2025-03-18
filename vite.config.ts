@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,8 +10,14 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    // Development mode check is preserved but doesn't use componentTagger
+    mode === 'development' && {
+      name: 'development-mode',
+      // This is a minimal placeholder plugin that just logs when in dev mode
+      configResolved() {
+        console.log('Running in development mode');
+      }
+    }
   ].filter(Boolean),
   resolve: {
     alias: {
