@@ -1,69 +1,55 @@
-# Welcome to your Lovable project
+# Portfolio Deployment Guide
 
-## Project info
+This guide explains how to deploy the portfolio application using Docker and Portainer.
 
-**URL**: https://lovable.dev/projects/65307fef-6fd6-4e98-b223-aed651e85695
+## Prerequisites
 
-## How can I edit this code?
+- Docker and Docker Compose installed on your server
+- Access to Portainer
 
-There are several ways of editing your application.
+## Deployment Steps
 
-**Use Lovable**
+### Option 1: Using Docker Compose
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/65307fef-6fd6-4e98-b223-aed651e85695) and start prompting.
+1. Copy all project files to your server
+2. Navigate to the project directory
+3. Build and start the container:
+   ```bash
+   docker-compose up -d
+   ```
+4. The application will be available at http://your-server-ip:8080
 
-Changes made via Lovable will be committed automatically to this repo.
+### Option 2: Using Portainer
 
-**Use your preferred IDE**
+1. Copy all project files to your server
+2. In Portainer, navigate to Stacks
+3. Click "Add stack"
+4. Give your stack a name (e.g., "momo-portfolio")
+5. Upload the docker-compose.yml file or paste its contents
+6. Click "Deploy the stack"
+7. The application will be available at http://your-server-ip:8080
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Configuration
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- To change the port, edit the `ports` section in the docker-compose.yml file
+- The default configuration uses port 8080, but you can change it to any available port
 
-Follow these steps:
+## Troubleshooting
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- If the site doesn't appear, check if the container is running:
+  ```bash
+  docker ps
+  ```
+- To view logs:
+  ```bash
+  docker logs momo-portfolio
+  ```
+- If you make changes to the application, rebuild the Docker image:
+  ```bash
+  docker-compose up -d --build
+  ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Security Considerations
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/65307fef-6fd6-4e98-b223-aed651e85695) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- Consider adding HTTPS by configuring a reverse proxy like Traefik or Nginx
+- Review your Nginx configuration for security best practices
