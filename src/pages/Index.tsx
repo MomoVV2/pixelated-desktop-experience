@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FolderOpen,
   Github,
@@ -39,6 +39,61 @@ type IconPosition = {
   [key: string]: { x: number; y: number };
 };
 
+// Preset layouts
+const layoutPresets = {
+  default: {
+    icons: {
+      projects: { x: 40, y: 40 },
+      aboutMe: { x: 40, y: 150 },
+      travel: { x: 40, y: 260 },
+      music: { x: 40, y: 370 },
+      cats: { x: 40, y: 480 },
+      coffee: { x: 40, y: 590 },
+      customize: { x: 40, y: 700 },
+    },
+    social: {
+      github: { x: 0, y: 40 },
+      linkedin: { x: 0, y: 150 },
+      twitter: { x: 0, y: 260 },
+      instagram: { x: 0, y: 370 },
+    }
+  },
+  centered: {
+    icons: {
+      projects: { x: 0, y: 40 },
+      aboutMe: { x: 0, y: 150 },
+      travel: { x: 0, y: 260 },
+      music: { x: 0, y: 370 },
+      cats: { x: 0, y: 480 },
+      coffee: { x: 0, y: 590 },
+      customize: { x: 0, y: 700 },
+    },
+    social: {
+      github: { x: 0, y: 40 },
+      linkedin: { x: 0, y: 150 },
+      twitter: { x: 0, y: 260 },
+      instagram: { x: 0, y: 370 },
+    }
+  },
+  minimal: {
+    icons: {
+      projects: { x: 40, y: 40 },
+      aboutMe: { x: 40, y: 130 },
+      travel: { x: 40, y: 220 },
+      music: { x: 40, y: 310 },
+      cats: { x: 40, y: 400 },
+      coffee: { x: 40, y: 490 },
+      customize: { x: 40, y: 580 },
+    },
+    social: {
+      github: { x: 0, y: 40 },
+      linkedin: { x: 0, y: 130 },
+      twitter: { x: 0, y: 220 },
+      instagram: { x: 0, y: 310 },
+    }
+  }
+};
+
 const Index = () => {
   const isMobile = useIsMobile();
   
@@ -47,23 +102,10 @@ const Index = () => {
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
   
   // State for icon positions
-  const [iconPositions, setIconPositions] = useState<IconPosition>({
-    projects: { x: 40, y: 40 },
-    aboutMe: { x: 40, y: 150 },
-    travel: { x: 40, y: 260 },
-    music: { x: 40, y: 370 },
-    cats: { x: 40, y: 480 },
-    coffee: { x: 40, y: 590 },
-    customize: { x: 40, y: 700 },
-  });
+  const [iconPositions, setIconPositions] = useState<IconPosition>(layoutPresets.default.icons);
   
   // State for social media icon positions
-  const [socialPositions, setSocialPositions] = useState<IconPosition>({
-    github: { x: 0, y: 0 },
-    linkedin: { x: 0, y: 0 },
-    twitter: { x: 0, y: 0 },
-    instagram: { x: 0, y: 0 },
-  });
+  const [socialPositions, setSocialPositions] = useState<IconPosition>(layoutPresets.default.social);
   
   // State for interface customization
   const [customSettings, setCustomSettings] = useState<CustomSettings>({
@@ -75,19 +117,89 @@ const Index = () => {
   
   // State for controlling pets
   const [showPetDog, setShowPetDog] = useState(false);
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800
+  });
   
-  // Set initial social icon positions
+  // Update window dimensions on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Update icon positions based on current layout and window size
+  const updateLayoutPositions = useCallback(() => {
+    const { width } = windowDimensions;
+    const scaledWidth = width * (100 / customSettings.scale);
+    const currentLayout = customSettings.layout;
+    
+    // Calculate positions based on layout
+    if (currentLayout === "centered") {
+      // Center the icons horizontally
+      const centerX = scaledWidth / 2 - 60;
+      const iconsCentered = { ...layoutPresets.centered.icons };
+      Object.keys(iconsCentered).forEach((key, index) => {
+        iconsCentered[key] = { x: centerX, y: 40 + index * 110 };
+      });
+      setIconPositions(iconsCentered);
+      
+      // Social icons on right
+      const rightX = scaledWidth - 120;
+      const socialCentered = { ...layoutPresets.centered.social };
+      Object.keys(socialCentered).forEach((key, index) => {
+        socialCentered[key] = { x: rightX, y: 40 + index * 110 };
+      });
+      setSocialPositions(socialCentered);
+    } 
+    else if (currentLayout === "minimal") {
+      // Use minimal preset with smaller spacing
+      const iconsMinimal = { ...layoutPresets.minimal.icons };
+      setIconPositions(iconsMinimal);
+      
+      // Social icons on right with minimal spacing
+      const rightX = scaledWidth - 120;
+      const socialMinimal = { ...layoutPresets.minimal.social };
+      Object.keys(socialMinimal).forEach((key, index) => {
+        socialMinimal[key] = { x: rightX, y: 40 + index * 90 };
+      });
+      setSocialPositions(socialMinimal);
+    }
+    else {
+      // Default layout
+      const iconsDefault = { ...layoutPresets.default.icons };
+      setIconPositions(iconsDefault);
+      
+      const rightX = scaledWidth - 120;
+      const socialDefault = { ...layoutPresets.default.social };
+      Object.keys(socialDefault).forEach((key, index) => {
+        socialDefault[key] = { x: rightX, y: 40 + index * 110 };
+      });
+      setSocialPositions(socialDefault);
+    }
+  }, [customSettings.layout, customSettings.scale, windowDimensions]);
+  
+  // Apply layout changes when layout or scale changes
+  useEffect(() => {
+    updateLayoutPositions();
+  }, [customSettings.layout, customSettings.scale, updateLayoutPositions]);
+  
+  // Set initial social icon positions and apply theme
   useEffect(() => {
     if (!isMobile) {
-      const rightSideX = window.innerWidth - 120; // Ensure it's a bit away from the edge
-      setSocialPositions({
-        github: { x: rightSideX, y: 40 },
-        linkedin: { x: rightSideX, y: 150 },
-        twitter: { x: rightSideX, y: 260 },
-        instagram: { x: rightSideX, y: 370 },
-      });
+      updateLayoutPositions();
     }
-  }, [isMobile]);
+    
+    // Apply theme
+    document.documentElement.dataset.theme = customSettings.colorScheme;
+  }, [isMobile, updateLayoutPositions, customSettings.colorScheme]);
   
   // Watch for scale changes to check if we need to switch to mobile view
   useEffect(() => {
@@ -96,10 +208,8 @@ const Index = () => {
         const scaledWidth = window.innerWidth * (100 / customSettings.scale);
         const scaledHeight = window.innerHeight * (100 / customSettings.scale);
         
-        // If the scaled viewport can't fit essential content, force mobile view
+        // If the scaled viewport can't fit essential content, force a reasonable scale
         if (scaledWidth < 600 || scaledHeight < 400) {
-          // This approach requires integrating with the useIsMobile hook
-          // For now, we'll just adjust the scale back to a reasonable value
           if (customSettings.scale > 180) {
             setCustomSettings({...customSettings, scale: 180});
           }
@@ -119,42 +229,6 @@ const Index = () => {
     
     // Apply specific theme-related changes based on color scheme
     document.documentElement.dataset.theme = settings.colorScheme;
-    
-    // Apply specific layout changes if needed
-    if (settings.layout === "centered") {
-      // Center the desktop icons
-      const centeredPositions = { ...iconPositions };
-      const centerX = (window.innerWidth * (100 / settings.scale)) / 2 - 60;
-      
-      Object.keys(centeredPositions).forEach((key, index) => {
-        centeredPositions[key] = { x: centerX, y: 40 + index * 110 };
-      });
-      setIconPositions(centeredPositions);
-      
-      // Center social icons
-      const socialCentered = { ...socialPositions };
-      const rightX = (window.innerWidth * (100 / settings.scale)) - 120;
-      Object.keys(socialCentered).forEach((key, index) => {
-        socialCentered[key] = { x: rightX, y: 40 + index * 110 };
-      });
-      setSocialPositions(socialCentered);
-    }
-    else if (settings.layout === "minimal") {
-      // Minimal layout - stack icons on left, socials on right
-      const minimalPositions = { ...iconPositions };
-      Object.keys(minimalPositions).forEach((key, index) => {
-        minimalPositions[key] = { x: 40, y: 40 + index * 90 };
-      });
-      setIconPositions(minimalPositions);
-      
-      // Right align social icons with minimal spacing
-      const socialMinimal = { ...socialPositions };
-      const rightX = (window.innerWidth * (100 / settings.scale)) - 120;
-      Object.keys(socialMinimal).forEach((key, index) => {
-        socialMinimal[key] = { x: rightX, y: 40 + index * 90 };
-      });
-      setSocialPositions(socialMinimal);
-    }
   };
 
   // Define all possible windows
@@ -419,7 +493,7 @@ const Index = () => {
   // Desktop version
   return (
     <div 
-      className="h-screen w-full relative overflow-hidden" 
+      className="h-screen w-full relative overflow-hidden bg-desktop-dark" 
       style={{ 
         backgroundImage: 'url("/seoul-pixelated.jpg")', 
         backgroundSize: 'cover',

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, PanInfo, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +50,26 @@ const translations: { [key: string]: { jp: string; kr: string; ar: string } } = 
     kr: "사용자 지정",
     ar: "تخصيص",
   },
+  "Github": {
+    jp: "ギットハブ",
+    kr: "깃허브",
+    ar: "جيثب",
+  },
+  "LinkedIn": {
+    jp: "リンクトイン",
+    kr: "링크드인",
+    ar: "لينكد إن",
+  },
+  "Twitter": {
+    jp: "ツイッター",
+    kr: "트위터",
+    ar: "تويتر",
+  },
+  "Instagram": {
+    jp: "インスタグラム",
+    kr: "인스타그램",
+    ar: "انستاغرام",
+  },
 };
 
 const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
@@ -65,6 +85,26 @@ const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [displayName, setDisplayName] = useState(name);
   const [displayType, setDisplayType] = useState<'en' | 'jp' | 'kr' | 'ar'>('en');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  
+  // Update container size on mount and resize
+  useEffect(() => {
+    const updateContainerSize = () => {
+      const container = containerRef.current?.parentElement;
+      if (container) {
+        setContainerSize({
+          width: container.clientWidth,
+          height: container.clientHeight
+        });
+      }
+    };
+    
+    updateContainerSize();
+    window.addEventListener('resize', updateContainerSize);
+    
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, []);
   
   // Change text on hover
   const handleHover = () => {
@@ -91,35 +131,45 @@ const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
     setDisplayType('en');
   };
   
-  // Fix for accurate dragging - use positional offsets
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+  
   const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (isDragging) {
-      setIsDragging(false);
-      
-      // Calculate new position, making sure the icon stays within view
-      const newX = Math.max(0, Math.min(window.innerWidth - 100, position.x + info.offset.x));
-      const newY = Math.max(0, Math.min(window.innerHeight - 150, position.y + info.offset.y));
-      
-      onPositionChange({
-        x: newX,
-        y: newY,
-      });
-    }
+    setIsDragging(false);
+    
+    if (containerSize.width === 0) return;
+    
+    // Calculate new position with boundary constraints
+    const iconWidth = 100; // Approximate width of the icon
+    const iconHeight = 100; // Approximate height of the icon
+    
+    const newX = Math.max(0, Math.min(containerSize.width - iconWidth, position.x + info.offset.x));
+    const newY = Math.max(0, Math.min(containerSize.height - iconHeight - 48, position.y + info.offset.y)); // Subtract taskbar height
+    
+    // Update position
+    onPositionChange({ x: newX, y: newY });
   };
   
   return (
     <motion.div
+      ref={containerRef}
       className={cn(
         "desktop-icon",
         isActive && "active",
         isDragging && "opacity-70",
         className
       )}
-      initial={{ position: "absolute", left: position.x, top: position.y }}
-      style={{ position: "absolute", left: position.x, top: position.y }}
+      style={{ 
+        position: "absolute", 
+        left: position.x, 
+        top: position.y,
+        touchAction: "none" // Improve touch dragging
+      }}
       drag
       dragMomentum={false}
-      onDragStart={() => setIsDragging(true)}
+      dragTransition={{ power: 0, timeConstant: 0 }} // Instant response to drag
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={() => {
         if (!isDragging) onClick();

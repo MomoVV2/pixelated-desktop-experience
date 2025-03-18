@@ -23,7 +23,7 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
   
   const colorSchemes = [
     { id: "momo", name: "Momo", accentColor: "#BB9AF7", borderColor: "#2D2D3F" },
-    { id: "neon", name: "Neon", accentColor: "#39ff14", borderColor: "#2D3F3D" },
+    { id: "neon", name: "Neon", accentColor: "#39ff14", borderColor: "#2D3F2D" },
     { id: "pastel", name: "Pastel", accentColor: "#FFB6C1", borderColor: "#3F2D3D" },
     { id: "monochrome", name: "Monochrome", accentColor: "#FFFFFF", borderColor: "#3F3F3F" },
   ];
@@ -45,6 +45,11 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
   };
   
   const handleApply = () => {
+    onApplyChanges(settings);
+  };
+  
+  // Preview changes immediately for better UX
+  const handlePreview = () => {
     onApplyChanges(settings);
   };
   
@@ -75,6 +80,8 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
               step="10"
               value={settings.scale}
               onChange={handleScaleChange}
+              onMouseUp={handlePreview}
+              onTouchEnd={handlePreview}
               className="flex-1 h-2 bg-desktop-border rounded-lg appearance-none cursor-pointer-pixelated"
             />
             <span className="text-xs">180%</span>
@@ -96,7 +103,10 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
                     : "border-desktop-border bg-desktop-dark/50 hover:bg-desktop-border/20"
                 }`}
                 style={{ borderColor: settings.colorScheme === scheme.id ? scheme.accentColor : undefined }}
-                onClick={() => handleColorSchemeChange(scheme.id as any)}
+                onClick={() => {
+                  handleColorSchemeChange(scheme.id as any);
+                  setTimeout(handlePreview, 50); // Preview after selection
+                }}
               >
                 <div className="flex items-center">
                   <div
@@ -127,7 +137,10 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
                     ? "bg-desktop-accent text-white"
                     : "bg-desktop-border/50 text-white/70 hover:bg-desktop-border/80"
                 }`}
-                onClick={() => handleAnimationSpeedChange(speed as any)}
+                onClick={() => {
+                  handleAnimationSpeedChange(speed as any);
+                  setTimeout(handlePreview, 50); // Preview after selection
+                }}
               >
                 {speed}
               </button>
@@ -149,7 +162,10 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
                     ? "bg-desktop-accent text-white"
                     : "bg-desktop-border/50 text-white/70 hover:bg-desktop-border/80"
                 }`}
-                onClick={() => handleLayoutChange(layout as any)}
+                onClick={() => {
+                  handleLayoutChange(layout as any);
+                  setTimeout(handlePreview, 50); // Preview after selection
+                }}
               >
                 {layout}
               </button>

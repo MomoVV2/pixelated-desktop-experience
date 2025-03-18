@@ -48,6 +48,7 @@ const PixelDog: React.FC<PixelDogProps> = ({
   const [isOnTaskbar, setIsOnTaskbar] = useState(false);
   const [dogColor, setDogColor] = useState("yellow-400");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   
   // Calculate movement speed based on animation speed
   const getMovementSpeed = () => {
@@ -58,33 +59,47 @@ const PixelDog: React.FC<PixelDogProps> = ({
     }
   };
   
+  // Update container size on mount and resize
+  useEffect(() => {
+    const updateContainerSize = () => {
+      const container = containerRef.current?.parentElement;
+      if (container) {
+        setContainerSize({
+          width: container.clientWidth,
+          height: container.clientHeight
+        });
+      }
+    };
+    
+    updateContainerSize();
+    window.addEventListener('resize', updateContainerSize);
+    
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, [scale]);
+  
   // Set new random target position every 6 seconds
   useEffect(() => {
-    if (isBeingDragged) return;
+    if (isBeingDragged || containerSize.width === 0) return;
     
     const interval = setInterval(() => {
-      if (containerRef.current) {
-        const container = containerRef.current.parentElement;
-        if (container) {
-          const maxX = container.clientWidth - 50;
-          // Don't go too low to avoid the taskbar
-          const maxY = container.clientHeight - 150;
-          
-          const newX = Math.max(50, Math.floor(Math.random() * maxX));
-          const newY = Math.max(100, Math.floor(Math.random() * maxY));
-          
-          setTargetPosition({ x: newX, y: newY });
-          setFlipped(newX < position.x);
-        }
-      }
+      // Calculate safe area boundaries (avoid edges and taskbar)
+      const maxX = containerSize.width - 70;
+      const maxY = containerSize.height - 120;
+      
+      // Generate random position within boundaries
+      const newX = Math.max(70, Math.floor(Math.random() * maxX));
+      const newY = Math.max(100, Math.floor(Math.random() * maxY));
+      
+      setTargetPosition({ x: newX, y: newY });
+      setFlipped(newX < position.x);
     }, 6000);
     
     return () => clearInterval(interval);
-  }, [position, isBeingDragged]);
+  }, [position, isBeingDragged, containerSize]);
   
   // Move toward target position if not being dragged
   useEffect(() => {
-    if (isBeingDragged) return;
+    if (isBeingDragged || containerSize.width === 0) return;
     
     const moveInterval = setInterval(() => {
       setPosition(current => {
@@ -92,10 +107,12 @@ const PixelDog: React.FC<PixelDogProps> = ({
         const dy = targetPosition.y - current.y;
         const distance = Math.sqrt(dx*dx + dy*dy);
         
+        // If very close to target, snap to it
         if (distance < 2) {
           return targetPosition;
         }
         
+        // Move towards target at appropriate speed
         const moveX = dx / distance * getMovementSpeed();
         const moveY = dy / distance * getMovementSpeed();
         
@@ -104,26 +121,24 @@ const PixelDog: React.FC<PixelDogProps> = ({
           y: current.y + moveY
         };
       });
-    }, 50);
+    }, 16); // ~60fps for smoother animation
     
     return () => clearInterval(moveInterval);
-  }, [targetPosition, isBeingDragged, animationSpeed]);
+  }, [targetPosition, isBeingDragged, animationSpeed, containerSize]);
   
   // Check if dog is on taskbar
   useEffect(() => {
-    if (containerRef.current) {
-      const container = containerRef.current.parentElement;
-      if (container) {
-        const taskbarY = container.clientHeight - 48;
-        if (position.y > taskbarY - 20 && !isOnTaskbar) {
-          setIsOnTaskbar(true);
-          showDogMessage("Woof! The taskbar is fun!");
-        } else if (position.y <= taskbarY - 20 && isOnTaskbar) {
-          setIsOnTaskbar(false);
-        }
-      }
+    if (containerSize.height === 0) return;
+    
+    const taskbarY = containerSize.height - 48; // Taskbar height is typically 48px
+    
+    if (position.y > taskbarY - 20 && !isOnTaskbar) {
+      setIsOnTaskbar(true);
+      showDogMessage("Woof! The taskbar is fun!");
+    } else if (position.y <= taskbarY - 20 && isOnTaskbar) {
+      setIsOnTaskbar(false);
     }
-  }, [position]);
+  }, [position, containerSize]);
   
   // Show random messages periodically if not being dragged
   useEffect(() => {
@@ -162,27 +177,22 @@ const PixelDog: React.FC<PixelDogProps> = ({
   const handleDragEnd = (event: any, info: any) => {
     setIsBeingDragged(false);
     
-    // Update position based on drag
-    setPosition({
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y
-    });
+    if (containerSize.width === 0) return;
+    
+    // Calculate new position with boundary constraints
+    const newX = Math.max(0, Math.min(containerSize.width - 60, position.x + info.offset.x));
+    const newY = Math.max(0, Math.min(containerSize.height - 60, position.y + info.offset.y));
+    
+    // Update position
+    setPosition({ x: newX, y: newY });
     
     // Also update target position to match current
-    setTargetPosition({
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y
-    });
+    setTargetPosition({ x: newX, y: newY });
     
     // Check if dropped on taskbar
-    if (containerRef.current) {
-      const container = containerRef.current.parentElement;
-      if (container) {
-        const taskbarY = container.clientHeight - 48;
-        if (position.y + info.offset.y > taskbarY - 20) {
-          showDogMessage("Woof! I like it down here!");
-        }
-      }
+    const taskbarY = containerSize.height - 48;
+    if (newY > taskbarY - 20) {
+      showDogMessage("Woof! I like it down here!");
     }
   };
   
@@ -214,11 +224,11 @@ const PixelDog: React.FC<PixelDogProps> = ({
       style={{ 
         left: `${position.x}px`, 
         top: `${position.y}px`,
-        transition: "transform 0.3s ease-out",
         scale: scale / 100
       }}
       drag
       dragMomentum={false}
+      dragTransition={{ power: 0, timeConstant: 0 }} // Instant response to drag
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleDogClick}
