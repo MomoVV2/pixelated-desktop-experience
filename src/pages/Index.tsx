@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   FolderOpen,
@@ -80,18 +79,82 @@ const Index = () => {
   // Set initial social icon positions
   useEffect(() => {
     if (!isMobile) {
+      const rightSideX = window.innerWidth - 120; // Ensure it's a bit away from the edge
       setSocialPositions({
-        github: { x: window.innerWidth - 70, y: 40 },
-        linkedin: { x: window.innerWidth - 70, y: 150 },
-        twitter: { x: window.innerWidth - 70, y: 260 },
-        instagram: { x: window.innerWidth - 70, y: 370 },
+        github: { x: rightSideX, y: 40 },
+        linkedin: { x: rightSideX, y: 150 },
+        twitter: { x: rightSideX, y: 260 },
+        instagram: { x: rightSideX, y: 370 },
       });
     }
   }, [isMobile]);
   
+  // Watch for scale changes to check if we need to switch to mobile view
+  useEffect(() => {
+    const checkViewport = () => {
+      if (!isMobile) {
+        const scaledWidth = window.innerWidth * (100 / customSettings.scale);
+        const scaledHeight = window.innerHeight * (100 / customSettings.scale);
+        
+        // If the scaled viewport can't fit essential content, force mobile view
+        if (scaledWidth < 600 || scaledHeight < 400) {
+          // This approach requires integrating with the useIsMobile hook
+          // For now, we'll just adjust the scale back to a reasonable value
+          if (customSettings.scale > 180) {
+            setCustomSettings({...customSettings, scale: 180});
+          }
+        }
+      }
+    };
+    
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
+  }, [customSettings.scale, isMobile]);
+  
   // Handle applying custom settings
   const handleApplyCustomSettings = (settings: CustomSettings) => {
+    // Apply all settings: scale, colorScheme, animationSpeed, and layout
     setCustomSettings(settings);
+    
+    // Apply specific theme-related changes based on color scheme
+    document.documentElement.dataset.theme = settings.colorScheme;
+    
+    // Apply specific layout changes if needed
+    if (settings.layout === "centered") {
+      // Center the desktop icons
+      const centeredPositions = { ...iconPositions };
+      const centerX = (window.innerWidth * (100 / settings.scale)) / 2 - 60;
+      
+      Object.keys(centeredPositions).forEach((key, index) => {
+        centeredPositions[key] = { x: centerX, y: 40 + index * 110 };
+      });
+      setIconPositions(centeredPositions);
+      
+      // Center social icons
+      const socialCentered = { ...socialPositions };
+      const rightX = (window.innerWidth * (100 / settings.scale)) - 120;
+      Object.keys(socialCentered).forEach((key, index) => {
+        socialCentered[key] = { x: rightX, y: 40 + index * 110 };
+      });
+      setSocialPositions(socialCentered);
+    }
+    else if (settings.layout === "minimal") {
+      // Minimal layout - stack icons on left, socials on right
+      const minimalPositions = { ...iconPositions };
+      Object.keys(minimalPositions).forEach((key, index) => {
+        minimalPositions[key] = { x: 40, y: 40 + index * 90 };
+      });
+      setIconPositions(minimalPositions);
+      
+      // Right align social icons with minimal spacing
+      const socialMinimal = { ...socialPositions };
+      const rightX = (window.innerWidth * (100 / settings.scale)) - 120;
+      Object.keys(socialMinimal).forEach((key, index) => {
+        socialMinimal[key] = { x: rightX, y: 40 + index * 90 };
+      });
+      setSocialPositions(socialMinimal);
+    }
   };
 
   // Define all possible windows
@@ -368,6 +431,7 @@ const Index = () => {
         width: `${100 * (100 / customSettings.scale)}vw`
       }}
       onClick={() => setActiveWindow(null)}
+      data-theme={customSettings.colorScheme}
     >
       {/* Desktop Icons */}
       <div onClick={(e) => e.stopPropagation()}>

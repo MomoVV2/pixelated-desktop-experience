@@ -28,6 +28,46 @@
     --ring: 240 4.9% 83.9%;
     --radius: 0.5rem;
   }
+  
+  /* Theme: Momo (Default) */
+  [data-theme="momo"] {
+    --desktop-dark: #121212;
+    --desktop-window: #1E1E2E;
+    --desktop-border: #2D2D3F;
+    --desktop-icon: #A5ADCB;
+    --desktop-accent: #BB9AF7;
+    --desktop-highlight: #7AA2F7;
+  }
+  
+  /* Theme: Neon */
+  [data-theme="neon"] {
+    --desktop-dark: #0A0A0A;
+    --desktop-window: #101010;
+    --desktop-border: #2D3F2D;
+    --desktop-icon: #00FF00;
+    --desktop-accent: #39FF14;
+    --desktop-highlight: #00FFFF;
+  }
+  
+  /* Theme: Pastel */
+  [data-theme="pastel"] {
+    --desktop-dark: #121218;
+    --desktop-window: #1E1E28;
+    --desktop-border: #3F2D3D;
+    --desktop-icon: #FFD1DC;
+    --desktop-accent: #FFB6C1;
+    --desktop-highlight: #FFC0CB;
+  }
+  
+  /* Theme: Monochrome */
+  [data-theme="monochrome"] {
+    --desktop-dark: #0F0F0F;
+    --desktop-window: #1A1A1A;
+    --desktop-border: #2F2F2F;
+    --desktop-icon: #CCCCCC;
+    --desktop-accent: #FFFFFF;
+    --desktop-highlight: #AAAAAA;
+  }
 }
 
 @layer base {

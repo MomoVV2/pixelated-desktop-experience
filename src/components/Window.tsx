@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { X, Minus, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, PanInfo } from "framer-motion";
 
 interface WindowProps {
   title: string;
@@ -25,51 +24,33 @@ const Window: React.FC<WindowProps> = ({
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [previousPosition, setPreviousPosition] = useState(initialPosition);
   const [previousSize, setPreviousSize] = useState({ width: 600, height: 400 });
   const windowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging && !isMaximized) {
-        setPosition({
-          x: e.clientX - dragOffset.x,
-          y: e.clientY - dragOffset.y,
-        });
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging, dragOffset, isMaximized]);
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (windowRef.current && !isMaximized) {
-      const rect = windowRef.current.getBoundingClientRect();
-      setDragOffset({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (!isMaximized) {
+      const newX = Math.max(0, Math.min(window.innerWidth - 200, position.x + info.delta.x));
+      const newY = Math.max(0, Math.min(window.innerHeight - 100, position.y + info.delta.y));
+      
+      setPosition({
+        x: newX,
+        y: newY
       });
-      setIsDragging(true);
     }
-    
+  };
+  
+  const handleDragStart = () => {
+    setIsDragging(true);
     if (onClick) {
       onClick();
     }
+  };
+  
+  const handleDragEnd = () => {
+    setIsDragging(false);
   };
   
   const handleMinimize = (e: React.MouseEvent) => {
@@ -112,10 +93,17 @@ const Window: React.FC<WindowProps> = ({
       transition={{ duration: 0.2 }}
       onClick={onClick}
     >
-      <div 
+      <motion.div 
         className="window-header" 
-        onMouseDown={handleMouseDown}
         onDoubleClick={handleMaximize}
+        drag={!isMaximized}
+        dragMomentum={false}
+        dragElastic={0}
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        dragListener={!isMaximized}
+        onDrag={handleDrag}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
       >
         <h3 className="text-xs">{title}</h3>
         <div className="flex items-center space-x-2">
@@ -138,7 +126,7 @@ const Window: React.FC<WindowProps> = ({
             <X size={12} />
           </button>
         </div>
-      </div>
+      </motion.div>
       <div className="window-content">{children}</div>
     </motion.div>
   );

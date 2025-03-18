@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface AnimatedDesktopIconProps {
@@ -45,6 +45,11 @@ const translations: { [key: string]: { jp: string; kr: string; ar: string } } = 
     kr: "커피",
     ar: "قهوة",
   },
+  "Customize": {
+    jp: "カスタマイズ",
+    kr: "사용자 지정",
+    ar: "تخصيص",
+  },
 };
 
 const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
@@ -86,6 +91,22 @@ const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
     setDisplayType('en');
   };
   
+  // Fix for accurate dragging - use positional offsets
+  const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (isDragging) {
+      setIsDragging(false);
+      
+      // Calculate new position, making sure the icon stays within view
+      const newX = Math.max(0, Math.min(window.innerWidth - 100, position.x + info.offset.x));
+      const newY = Math.max(0, Math.min(window.innerHeight - 150, position.y + info.offset.y));
+      
+      onPositionChange({
+        x: newX,
+        y: newY,
+      });
+    }
+  };
+  
   return (
     <motion.div
       className={cn(
@@ -99,13 +120,7 @@ const AnimatedDesktopIcon: React.FC<AnimatedDesktopIconProps> = ({
       drag
       dragMomentum={false}
       onDragStart={() => setIsDragging(true)}
-      onDragEnd={(_, info) => {
-        setIsDragging(false);
-        onPositionChange({
-          x: position.x + info.offset.x,
-          y: position.y + info.offset.y,
-        });
-      }}
+      onDragEnd={handleDragEnd}
       onClick={() => {
         if (!isDragging) onClick();
       }}

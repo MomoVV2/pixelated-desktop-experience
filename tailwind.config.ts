@@ -64,12 +64,12 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         desktop: {
-          dark: '#121212',
-          window: '#1E1E2E',
-          border: '#2D2D3F',
-          icon: '#A5ADCB',
-          accent: '#BB9AF7',
-          highlight: '#7AA2F7'
+          dark: 'var(--desktop-dark)',
+          window: 'var(--desktop-window)',
+          border: 'var(--desktop-border)',
+          icon: 'var(--desktop-icon)',
+          accent: 'var(--desktop-accent)',
+          highlight: 'var(--desktop-highlight)'
         }
       },
       fontFamily: {
@@ -110,6 +110,12 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'fall': {
+          '0%': { transform: 'translateY(-20px)' },
+          '60%': { transform: 'translateY(5px)' },
+          '80%': { transform: 'translateY(-3px)' },
+          '100%': { transform: 'translateY(0)' },
+        }
       },
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
@@ -118,6 +124,7 @@ export default {
         'window-close': 'window-close 0.2s ease-in forwards',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fall': 'fall 0.5s ease-in-out',
       },
       cursor: {
         'pixelated': 'url("/cursor.png"), auto',

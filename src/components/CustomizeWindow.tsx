@@ -71,13 +71,13 @@ const CustomizeWindow: React.FC<CustomizeWindowProps> = ({
             <input
               type="range"
               min="100"
-              max="200"
+              max="180"
               step="10"
               value={settings.scale}
               onChange={handleScaleChange}
               className="flex-1 h-2 bg-desktop-border rounded-lg appearance-none cursor-pointer-pixelated"
             />
-            <span className="text-xs">200%</span>
+            <span className="text-xs">180%</span>
           </div>
         </div>
         

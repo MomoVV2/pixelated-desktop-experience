@@ -39,15 +39,18 @@ const PixelCat: React.FC<PixelCatProps> = ({
   colorScheme = "momo",
   animationSpeed = "normal"
 }) => {
-  const [position, setPosition] = useState<Position>({ x: 100, y: 300 });
-  const [targetPosition, setTargetPosition] = useState<Position>({ x: 100, y: 300 });
+  // Use taskbar position as the baseline
+  const [position, setPosition] = useState<Position>({ x: 100, y: 0 });
+  const [targetPosition, setTargetPosition] = useState<Position>({ x: 100, y: 0 });
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [flipped, setFlipped] = useState(false);
   const [isBeingDragged, setIsBeingDragged] = useState(false);
-  const [isOnTaskbar, setIsOnTaskbar] = useState(false);
+  const [isOnTaskbar, setIsOnTaskbar] = useState(true); // Always on taskbar
   const [catColor, setCatColor] = useState("desktop-accent");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [taskbarHeight, setTaskbarHeight] = useState(0);
+  const [taskbarY, setTaskbarY] = useState(0);
   
   // Calculate movement speed based on animation speed
   const getMovementSpeed = () => {
@@ -58,20 +61,41 @@ const PixelCat: React.FC<PixelCatProps> = ({
     }
   };
   
-  // Set new random target position every 5 seconds
+  // Find the taskbar position on component mount and window resize
+  useEffect(() => {
+    const updateTaskbarPosition = () => {
+      const taskbar = document.querySelector('.taskbar');
+      if (taskbar) {
+        const taskbarRect = taskbar.getBoundingClientRect();
+        setTaskbarHeight(taskbarRect.height);
+        const scaledTaskbarY = window.innerHeight * (100 / (scale || 100)) - taskbarRect.height;
+        setTaskbarY(scaledTaskbarY);
+        
+        // Initialize the cat position on the taskbar
+        if (position.y === 0) {
+          setPosition({ x: position.x, y: scaledTaskbarY - 20 });
+          setTargetPosition({ x: position.x, y: scaledTaskbarY - 20 });
+        }
+      }
+    };
+    
+    updateTaskbarPosition();
+    window.addEventListener('resize', updateTaskbarPosition);
+    return () => window.removeEventListener('resize', updateTaskbarPosition);
+  }, [scale]);
+  
+  // Set new random target position along the taskbar
   useEffect(() => {
     if (isBeingDragged) return;
     
     const interval = setInterval(() => {
-      if (containerRef.current) {
+      if (containerRef.current && taskbarY > 0) {
         const container = containerRef.current.parentElement;
         if (container) {
           const maxX = container.clientWidth - 50;
-          // Don't go too low to avoid the taskbar
-          const maxY = container.clientHeight - 150;
-          
+          // Stay on the taskbar
           const newX = Math.max(50, Math.floor(Math.random() * maxX));
-          const newY = Math.max(100, Math.floor(Math.random() * maxY));
+          const newY = taskbarY - 20; // Position just above the taskbar
           
           setTargetPosition({ x: newX, y: newY });
           setFlipped(newX < position.x);
@@ -80,50 +104,43 @@ const PixelCat: React.FC<PixelCatProps> = ({
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [position, isBeingDragged]);
+  }, [position, isBeingDragged, taskbarY]);
   
-  // Move toward target position if not being dragged
+  // Move toward target position if not being dragged, but stay on taskbar
   useEffect(() => {
-    if (isBeingDragged) return;
+    if (isBeingDragged || taskbarY === 0) return;
     
     const moveInterval = setInterval(() => {
       setPosition(current => {
+        // Gravity effect - always fall back to taskbar if above it
+        if (current.y < taskbarY - 30) {
+          // Apply gravity - fall faster the higher up
+          const fallSpeed = Math.max(2, (taskbarY - current.y) / 10);
+          return {
+            x: current.x,
+            y: Math.min(taskbarY - 20, current.y + fallSpeed)
+          };
+        }
+        
+        // Normal movement along the taskbar
         const dx = targetPosition.x - current.x;
-        const dy = targetPosition.y - current.y;
-        const distance = Math.sqrt(dx*dx + dy*dy);
+        const distance = Math.abs(dx);
         
         if (distance < 2) {
-          return targetPosition;
+          return { x: targetPosition.x, y: taskbarY - 20 };
         }
         
         const moveX = dx / distance * getMovementSpeed();
-        const moveY = dy / distance * getMovementSpeed();
         
         return {
           x: current.x + moveX,
-          y: current.y + moveY
+          y: taskbarY - 20 // Always stay at taskbar level
         };
       });
     }, 50);
     
     return () => clearInterval(moveInterval);
-  }, [targetPosition, isBeingDragged, animationSpeed]);
-  
-  // Check if cat is on taskbar
-  useEffect(() => {
-    if (containerRef.current) {
-      const container = containerRef.current.parentElement;
-      if (container) {
-        const taskbarY = container.clientHeight - 48;
-        if (position.y > taskbarY - 20 && !isOnTaskbar) {
-          setIsOnTaskbar(true);
-          showCatMessage("Ouch! That hurt!");
-        } else if (position.y <= taskbarY - 20 && isOnTaskbar) {
-          setIsOnTaskbar(false);
-        }
-      }
-    }
-  }, [position]);
+  }, [targetPosition, isBeingDragged, taskbarY, animationSpeed]);
   
   // Show random messages periodically if not being dragged
   useEffect(() => {
@@ -162,27 +179,22 @@ const PixelCat: React.FC<PixelCatProps> = ({
   const handleDragEnd = (event: any, info: any) => {
     setIsBeingDragged(false);
     
-    // Update position based on drag
-    setPosition({
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y
-    });
+    // Calculate new position - ensure the cat stays on or above the taskbar
+    const newX = Math.max(0, Math.min(window.innerWidth * (100/scale) - 50, position.x + info.offset.x));
+    let newY = position.y + info.offset.y;
     
-    // Also update target position to match current
-    setTargetPosition({
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y
-    });
+    // Apply the position update
+    setPosition({ x: newX, y: newY });
     
-    // Check if dropped on taskbar
-    if (containerRef.current) {
-      const container = containerRef.current.parentElement;
-      if (container) {
-        const taskbarY = container.clientHeight - 48;
-        if (position.y + info.offset.y > taskbarY - 20) {
-          showCatMessage("I love sitting on the taskbar!");
-        }
-      }
+    // If dropped above taskbar, show falling message
+    if (newY < taskbarY - 30) {
+      showCatMessage("Ouch! That hurt!");
+      // Target position is back on taskbar - gravity will pull cat down
+      setTargetPosition({ x: newX, y: taskbarY - 20 });
+    } else {
+      // If dropped near taskbar, snap to taskbar position
+      setTargetPosition({ x: newX, y: taskbarY - 20 });
+      setPosition({ x: newX, y: taskbarY - 20 });
     }
   };
   
