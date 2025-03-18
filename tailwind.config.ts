@@ -132,5 +132,27 @@ export default {
       }
     }
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addUtilities, matchUtilities, theme }) {
+      // Add utility for desktop-accent with opacity
+      matchUtilities(
+        {
+          'bg-desktop-accent': (value) => ({
+            'background-color': `rgb(var(--desktop-accent-rgb) / ${value})`,
+          }),
+        },
+        { values: { 10: '0.1', 20: '0.2', 30: '0.3', 40: '0.4', 50: '0.5', 60: '0.6', 70: '0.7', 80: '0.8', 90: '0.9' } }
+      );
+      // Add utility for desktop-border with opacity
+      matchUtilities(
+        {
+          'bg-desktop-border': (value) => ({
+            'background-color': `rgb(var(--desktop-border-rgb) / ${value})`,
+          }),
+        },
+        { values: { 10: '0.1', 20: '0.2', 30: '0.3', 40: '0.4', 50: '0.5', 60: '0.6', 70: '0.7', 80: '0.8', 90: '0.9' } }
+      );
+    },
+  ],
 } satisfies Config;

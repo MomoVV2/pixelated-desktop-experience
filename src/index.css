@@ -37,6 +37,10 @@
     --desktop-icon: #A5ADCB;
     --desktop-accent: #BB9AF7;
     --desktop-highlight: #7AA2F7;
+    
+    /* RGB values for opacity utilities */
+    --desktop-accent-rgb: 187, 154, 247;
+    --desktop-border-rgb: 45, 45, 63;
   }
   
   /* Theme: Neon */
@@ -47,6 +51,10 @@
     --desktop-icon: #00FF00;
     --desktop-accent: #39FF14;
     --desktop-highlight: #00FFFF;
+    
+    /* RGB values for opacity utilities */
+    --desktop-accent-rgb: 57, 255, 20;
+    --desktop-border-rgb: 45, 63, 45;
   }
   
   /* Theme: Pastel */
@@ -57,6 +65,10 @@
     --desktop-icon: #FFD1DC;
     --desktop-accent: #FFB6C1;
     --desktop-highlight: #FFC0CB;
+    
+    /* RGB values for opacity utilities */
+    --desktop-accent-rgb: 255, 182, 193;
+    --desktop-border-rgb: 63, 45, 61;
   }
   
   /* Theme: Monochrome */
@@ -67,6 +79,10 @@
     --desktop-icon: #CCCCCC;
     --desktop-accent: #FFFFFF;
     --desktop-highlight: #AAAAAA;
+    
+    /* RGB values for opacity utilities */
+    --desktop-accent-rgb: 255, 255, 255;
+    --desktop-border-rgb: 47, 47, 47;
   }
 }
 
@@ -75,8 +91,10 @@
     @apply border-border;
   }
   
+  /* Custom selection styling */
   ::selection {
-    @apply bg-desktop-accent/30 text-white;
+    background-color: rgba(var(--desktop-accent-rgb), 0.3);
+    color: white;
   }
   
   html, body, #root {
@@ -112,7 +130,7 @@
   }
   
   .desktop-icon.active {
-    @apply bg-desktop-accent/20;
+    background-color: rgba(var(--desktop-accent-rgb), 0.2);
   }
   
   .desktop-icon-img {
@@ -132,7 +150,7 @@
   }
   
   .start-button.active {
-    @apply bg-desktop-accent/80;
+    background-color: rgba(var(--desktop-accent-rgb), 0.8);
   }
   
   .taskbar-item {
@@ -144,7 +162,8 @@
   }
   
   .taskbar-item.active {
-    @apply bg-desktop-accent/30 text-white;
+    background-color: rgba(var(--desktop-accent-rgb), 0.3);
+    @apply text-white;
   }
 
   .image-pixelate {
@@ -169,11 +188,21 @@
   }
   
   .text-animated::after {
-    @apply content-[''] absolute bottom-0 left-0 w-full h-[2px] bg-desktop-accent transform scale-x-0 transition-transform duration-300 origin-bottom-right;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--desktop-accent);
+    transform: scale(0, 1);
+    transition: transform 0.3s;
+    transform-origin: right;
   }
   
   .text-animated:hover::after {
-    @apply transform scale-x-100 origin-bottom-left;
+    transform: scale(1, 1);
+    transform-origin: left;
   }
   
   /* Scrollbar styles */
