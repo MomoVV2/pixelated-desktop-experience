@@ -8,7 +8,7 @@ interface Position {
   y: number;
 }
 
-interface PixelCatProps {
+interface PixelDogProps {
   className?: string;
   scale?: number;
   colorScheme?: string;
@@ -16,37 +16,37 @@ interface PixelCatProps {
 }
 
 const messages = [
-  "Meow! Need coffee?",
-  "Coding time!",
-  "Seoul is beautiful!",
-  "I love jazz too!",
-  "K-pop is life!",
-  "Click on some folders!",
+  "Woof! Let's play!",
+  "I love walks!",
+  "Got treats?",
+  "Squirrel!",
+  "Ball! Ball! Ball!",
+  "Pet me please!",
   "안녕하세요!",
   "こんにちは!",
   "مرحبا!",
-  "Pet me!",
+  "Ruff ruff!",
   "Drag me around!",
   "Ouch! That hurt!",
-  "I love the taskbar!",
-  "Feed me pixels!",
-  "Customize me!",
+  "The taskbar is comfy!",
+  "Digital bones please!",
+  "I'm a good boy!",
 ];
 
-const PixelCat: React.FC<PixelCatProps> = ({ 
+const PixelDog: React.FC<PixelDogProps> = ({ 
   className, 
   scale = 100,
   colorScheme = "momo",
   animationSpeed = "normal"
 }) => {
-  const [position, setPosition] = useState<Position>({ x: 100, y: 300 });
-  const [targetPosition, setTargetPosition] = useState<Position>({ x: 100, y: 300 });
+  const [position, setPosition] = useState<Position>({ x: 200, y: 350 });
+  const [targetPosition, setTargetPosition] = useState<Position>({ x: 200, y: 350 });
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [flipped, setFlipped] = useState(false);
   const [isBeingDragged, setIsBeingDragged] = useState(false);
   const [isOnTaskbar, setIsOnTaskbar] = useState(false);
-  const [catColor, setCatColor] = useState("desktop-accent");
+  const [dogColor, setDogColor] = useState("yellow-400");
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Calculate movement speed based on animation speed
@@ -58,7 +58,7 @@ const PixelCat: React.FC<PixelCatProps> = ({
     }
   };
   
-  // Set new random target position every 5 seconds
+  // Set new random target position every 6 seconds
   useEffect(() => {
     if (isBeingDragged) return;
     
@@ -77,7 +77,7 @@ const PixelCat: React.FC<PixelCatProps> = ({
           setFlipped(newX < position.x);
         }
       }
-    }, 5000);
+    }, 6000);
     
     return () => clearInterval(interval);
   }, [position, isBeingDragged]);
@@ -109,7 +109,7 @@ const PixelCat: React.FC<PixelCatProps> = ({
     return () => clearInterval(moveInterval);
   }, [targetPosition, isBeingDragged, animationSpeed]);
   
-  // Check if cat is on taskbar
+  // Check if dog is on taskbar
   useEffect(() => {
     if (containerRef.current) {
       const container = containerRef.current.parentElement;
@@ -117,7 +117,7 @@ const PixelCat: React.FC<PixelCatProps> = ({
         const taskbarY = container.clientHeight - 48;
         if (position.y > taskbarY - 20 && !isOnTaskbar) {
           setIsOnTaskbar(true);
-          showCatMessage("Ouch! That hurt!");
+          showDogMessage("Woof! The taskbar is fun!");
         } else if (position.y <= taskbarY - 20 && isOnTaskbar) {
           setIsOnTaskbar(false);
         }
@@ -132,14 +132,14 @@ const PixelCat: React.FC<PixelCatProps> = ({
     const messageInterval = setInterval(() => {
       if (Math.random() < 0.3) {
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        showCatMessage(randomMessage);
+        showDogMessage(randomMessage);
       }
-    }, 8000);
+    }, 10000);
     
     return () => clearInterval(messageInterval);
   }, [isBeingDragged]);
   
-  const showCatMessage = (msg: string) => {
+  const showDogMessage = (msg: string) => {
     setMessage(msg);
     setShowMessage(true);
     
@@ -148,10 +148,10 @@ const PixelCat: React.FC<PixelCatProps> = ({
     }, 3000);
   };
   
-  const handleCatClick = () => {
+  const handleDogClick = () => {
     if (!isBeingDragged) {
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-      showCatMessage(randomMessage);
+      showDogMessage(randomMessage);
     }
   };
   
@@ -180,30 +180,30 @@ const PixelCat: React.FC<PixelCatProps> = ({
       if (container) {
         const taskbarY = container.clientHeight - 48;
         if (position.y + info.offset.y > taskbarY - 20) {
-          showCatMessage("I love sitting on the taskbar!");
+          showDogMessage("Woof! I like it down here!");
         }
       }
     }
   };
   
   const handleColorChange = () => {
-    const colors = ["desktop-accent", "green-400", "blue-400", "red-400", "yellow-400", "pink-400"];
-    const currentIndex = colors.indexOf(catColor);
+    const colors = ["yellow-400", "brown-400", "gray-400", "white", "black", "desktop-accent"];
+    const currentIndex = colors.indexOf(dogColor);
     const nextIndex = (currentIndex + 1) % colors.length;
-    setCatColor(colors[nextIndex]);
-    showCatMessage("I changed my color!");
+    setDogColor(colors[nextIndex]);
+    showDogMessage("New fur color!");
   };
   
-  // Get cat face based on color scheme
-  const getCatFace = () => {
+  // Get dog face based on color scheme
+  const getDogFace = () => {
     if (colorScheme === "neon") {
-      return "^•‿•^";
+      return "ʕ•ᴥ•ʔ";
     } else if (colorScheme === "pastel") {
-      return "^ﻌ^";
+      return "U・ᴥ・U";
     } else if (colorScheme === "monochrome") {
-      return "^•_•^";
+      return "ʕ•_•ʔ";
     } else {
-      return "^•ﻌ•^";
+      return "ʕ•ᴥ•ʔ";
     }
   };
   
@@ -221,20 +221,20 @@ const PixelCat: React.FC<PixelCatProps> = ({
       dragMomentum={false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onClick={handleCatClick}
+      onClick={handleDogClick}
     >
       <div 
-        className="w-12 h-12 relative image-pixelate"
+        className="w-14 h-12 relative image-pixelate"
         style={{ transform: flipped ? 'scaleX(-1)' : 'none' }}
       >
-        {/* Pixel Cat Image */}
+        {/* Pixel Dog Image */}
         <div 
-          className={`w-12 h-12 bg-desktop-dark rounded-sm overflow-hidden border-2 flex items-center justify-center ${
-            isOnTaskbar ? "border-green-400" : `border-${catColor}`
+          className={`w-14 h-12 bg-desktop-dark rounded-sm overflow-hidden border-2 flex items-center justify-center ${
+            isOnTaskbar ? "border-green-400" : `border-${dogColor}`
           }`}
           onDoubleClick={handleColorChange}
         >
-          <div className={`text-${catColor} font-pixel text-xs`}>{getCatFace()}</div>
+          <div className={`text-${dogColor} font-pixel text-xs`}>{getDogFace()}</div>
         </div>
         
         {/* Message Bubble */}
@@ -249,4 +249,4 @@ const PixelCat: React.FC<PixelCatProps> = ({
   );
 };
 
-export default PixelCat;
+export default PixelDog;

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { User, Code, Image, Music, Cat, Coffee, Info, LogOut } from "lucide-react";
+import { User, Code, Image, Music, Cat, Coffee, Info, LogOut, Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface StartMenuItem {
@@ -62,6 +62,12 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onOpenWindow }) 
       onClick: () => handleItemClick("coffee"),
     },
     {
+      id: "customize",
+      icon: <Palette size={16} />,
+      label: "Customize",
+      onClick: () => handleItemClick("customize"),
+    },
+    {
       id: "about",
       icon: <Info size={16} />,
       label: "About This Site",
@@ -84,6 +90,8 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onOpenWindow }) 
         return Math.random() < 0.33 ? "猫" : Math.random() < 0.5 ? "고양이" : "قطط";
       case "coffee":
         return Math.random() < 0.33 ? "コーヒー" : Math.random() < 0.5 ? "커피" : "قهوة";
+      case "customize":
+        return Math.random() < 0.33 ? "カスタマイズ" : Math.random() < 0.5 ? "사용자 지정" : "تخصيص";
       case "about":
         return Math.random() < 0.33 ? "サイトについて" : Math.random() < 0.5 ? "사이트 정보" : "حول الموقع";
       default:

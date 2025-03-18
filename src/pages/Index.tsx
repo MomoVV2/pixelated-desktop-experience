@@ -13,6 +13,7 @@ import {
   Cat,
   Coffee,
   Info,
+  Palette,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import AnimatedDesktopIcon from "@/components/AnimatedDesktopIcon";
@@ -21,7 +22,9 @@ import Taskbar from "@/components/Taskbar";
 import Projects from "@/components/Projects";
 import AboutMe from "@/components/AboutMe";
 import PixelCat from "@/components/PixelCat";
+import PixelDog from "@/components/PixelDog";
 import AboutSite from "@/components/AboutSite";
+import CustomizeWindow, { CustomSettings } from "@/components/CustomizeWindow";
 import { motion } from "framer-motion";
 
 // Define our window types
@@ -52,7 +55,44 @@ const Index = () => {
     music: { x: 40, y: 370 },
     cats: { x: 40, y: 480 },
     coffee: { x: 40, y: 590 },
+    customize: { x: 40, y: 700 },
   });
+  
+  // State for social media icon positions
+  const [socialPositions, setSocialPositions] = useState<IconPosition>({
+    github: { x: 0, y: 0 },
+    linkedin: { x: 0, y: 0 },
+    twitter: { x: 0, y: 0 },
+    instagram: { x: 0, y: 0 },
+  });
+  
+  // State for interface customization
+  const [customSettings, setCustomSettings] = useState<CustomSettings>({
+    scale: 150, // Default zoom at 150%
+    colorScheme: "momo", // Default theme
+    animationSpeed: "normal",
+    layout: "default",
+  });
+  
+  // State for controlling pets
+  const [showPetDog, setShowPetDog] = useState(false);
+  
+  // Set initial social icon positions
+  useEffect(() => {
+    if (!isMobile) {
+      setSocialPositions({
+        github: { x: window.innerWidth - 70, y: 40 },
+        linkedin: { x: window.innerWidth - 70, y: 150 },
+        twitter: { x: window.innerWidth - 70, y: 260 },
+        instagram: { x: window.innerWidth - 70, y: 370 },
+      });
+    }
+  }, [isMobile]);
+  
+  // Handle applying custom settings
+  const handleApplyCustomSettings = (settings: CustomSettings) => {
+    setCustomSettings(settings);
+  };
 
   // Define all possible windows
   const allWindows: Record<string, WindowType> = {
@@ -153,6 +193,17 @@ const Index = () => {
       content: <AboutSite />,
       initialPosition: { x: 200, y: 150 },
     },
+    customize: {
+      id: "customize",
+      title: "Customize",
+      content: (
+        <CustomizeWindow 
+          onApplyChanges={handleApplyCustomSettings} 
+          currentSettings={customSettings}
+        />
+      ),
+      initialPosition: { x: 250, y: 120 },
+    },
   };
 
   // Function to open a window
@@ -179,6 +230,19 @@ const Index = () => {
     });
   };
   
+  // Function to update social icon position
+  const updateSocialPosition = (id: string, position: { x: number; y: number }) => {
+    setSocialPositions({
+      ...socialPositions,
+      [id]: position,
+    });
+  };
+  
+  // Toggle showing the dog pet
+  const togglePetDog = () => {
+    setShowPetDog(!showPetDog);
+  };
+  
   // Mobile version
   if (isMobile) {
     return (
@@ -203,6 +267,7 @@ const Index = () => {
                   {id === "cats" && <Cat size={16} className="mr-2" />}
                   {id === "coffee" && <Coffee size={16} className="mr-2" />}
                   {id === "about" && <Info size={16} className="mr-2" />}
+                  {id === "customize" && <Palette size={16} className="mr-2" />}
                   {window.title}
                 </h2>
               </motion.div>
@@ -210,38 +275,78 @@ const Index = () => {
           </div>
           
           <div className="mt-8 grid grid-cols-4 gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+            <motion.a 
+              href="https://github.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Github size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Github</span>
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+            </motion.a>
+            <motion.a 
+              href="https://linkedin.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Linkedin size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">LinkedIn</span>
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+            </motion.a>
+            <motion.a 
+              href="https://twitter.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Twitter size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Twitter</span>
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+            </motion.a>
+            <motion.a 
+              href="https://instagram.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Instagram size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Instagram</span>
-            </a>
+            </motion.a>
           </div>
           
           {openWindows.length > 0 && (
-            <div className="mt-8 fixed inset-0 bg-black/90 z-50 overflow-auto">
+            <motion.div 
+              className="mt-8 fixed inset-0 bg-black/90 z-50 overflow-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
               <div className="p-4">
-                <button 
+                <motion.button 
                   className="mb-4 px-3 py-1 bg-desktop-accent text-white rounded text-sm"
                   onClick={() => setOpenWindows([])}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Back
-                </button>
-                <div className="bg-desktop-window border border-desktop-border rounded-md p-4">
+                </motion.button>
+                <motion.div 
+                  className="bg-desktop-window border border-desktop-border rounded-md p-4"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
                   {allWindows[openWindows[0]].content}
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
@@ -256,7 +361,11 @@ const Index = () => {
         backgroundImage: 'url("/seoul-pixelated.jpg")', 
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        imageRendering: 'pixelated'
+        imageRendering: 'pixelated',
+        transform: `scale(${customSettings.scale / 100})`,
+        transformOrigin: 'top left',
+        height: `${100 * (100 / customSettings.scale)}vh`,
+        width: `${100 * (100 / customSettings.scale)}vw`
       }}
       onClick={() => setActiveWindow(null)}
     >
@@ -310,62 +419,62 @@ const Index = () => {
           position={iconPositions.coffee}
           onPositionChange={(pos) => updateIconPosition("coffee", pos)}
         />
+        <AnimatedDesktopIcon
+          name="Customize"
+          icon={<Palette size={32} className="text-desktop-icon" />}
+          onClick={() => openWindow("customize")}
+          isActive={activeWindow === "customize"}
+          position={iconPositions.customize}
+          onPositionChange={(pos) => updateIconPosition("customize", pos)}
+        />
       </div>
 
-      {/* Social Media Icons */}
-      <div className="absolute top-6 right-6 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-        <motion.a 
-          href="https://github.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="desktop-icon">
-            <Github size={32} className="text-desktop-icon" />
-            <div className="desktop-icon-text">Github</div>
-          </div>
-        </motion.a>
-        <motion.a 
-          href="https://linkedin.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="desktop-icon">
-            <Linkedin size={32} className="text-desktop-icon" />
-            <div className="desktop-icon-text">LinkedIn</div>
-          </div>
-        </motion.a>
-        <motion.a 
-          href="https://twitter.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="desktop-icon">
-            <Twitter size={32} className="text-desktop-icon" />
-            <div className="desktop-icon-text">Twitter</div>
-          </div>
-        </motion.a>
-        <motion.a 
-          href="https://instagram.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="desktop-icon">
-            <Instagram size={32} className="text-desktop-icon" />
-            <div className="desktop-icon-text">Instagram</div>
-          </div>
-        </motion.a>
+      {/* Social Media Icons - Now Draggable */}
+      <div onClick={(e) => e.stopPropagation()}>
+        <AnimatedDesktopIcon
+          name="Github"
+          icon={<Github size={32} className="text-desktop-icon" />}
+          onClick={() => window.open("https://github.com", "_blank")}
+          position={socialPositions.github}
+          onPositionChange={(pos) => updateSocialPosition("github", pos)}
+        />
+        <AnimatedDesktopIcon
+          name="LinkedIn"
+          icon={<Linkedin size={32} className="text-desktop-icon" />}
+          onClick={() => window.open("https://linkedin.com", "_blank")}
+          position={socialPositions.linkedin}
+          onPositionChange={(pos) => updateSocialPosition("linkedin", pos)}
+        />
+        <AnimatedDesktopIcon
+          name="Twitter"
+          icon={<Twitter size={32} className="text-desktop-icon" />}
+          onClick={() => window.open("https://twitter.com", "_blank")}
+          position={socialPositions.twitter}
+          onPositionChange={(pos) => updateSocialPosition("twitter", pos)}
+        />
+        <AnimatedDesktopIcon
+          name="Instagram"
+          icon={<Instagram size={32} className="text-desktop-icon" />}
+          onClick={() => window.open("https://instagram.com", "_blank")}
+          position={socialPositions.instagram}
+          onPositionChange={(pos) => updateSocialPosition("instagram", pos)}
+        />
       </div>
 
-      {/* Roaming Pixel Cat */}
-      <PixelCat />
+      {/* Pixel Pets */}
+      <PixelCat 
+        scale={customSettings.scale} 
+        colorScheme={customSettings.colorScheme}
+        animationSpeed={customSettings.animationSpeed}
+      />
+      
+      {showPetDog && (
+        <PixelDog 
+          scale={customSettings.scale} 
+          colorScheme={customSettings.colorScheme}
+          animationSpeed={customSettings.animationSpeed}
+        />
+      )}
 
       {/* Windows */}
       <div onClick={(e) => e.stopPropagation()}>
@@ -393,6 +502,10 @@ const Index = () => {
         activeWindow={activeWindow}
         onWindowSelect={setActiveWindow}
         onWindowOpen={openWindow}
+        scale={customSettings.scale}
+        onScaleChange={(newScale) => setCustomSettings({...customSettings, scale: newScale})}
+        onTogglePet={togglePetDog}
+        showPetDog={showPetDog}
       />
     </div>
   );

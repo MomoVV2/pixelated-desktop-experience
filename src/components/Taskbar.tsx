@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Clock } from "lucide-react";
+import { Clock, ZoomIn, ZoomOut, PlusCircle } from "lucide-react";
 import StartMenu from "./StartMenu";
 
 interface TaskbarProps {
@@ -8,6 +8,10 @@ interface TaskbarProps {
   activeWindow: string | null;
   onWindowSelect: (id: string) => void;
   onWindowOpen: (id: string) => void;
+  scale: number;
+  onScaleChange: (scale: number) => void;
+  onTogglePet: () => void;
+  showPetDog: boolean;
 }
 
 const Taskbar: React.FC<TaskbarProps> = ({
@@ -15,6 +19,10 @@ const Taskbar: React.FC<TaskbarProps> = ({
   activeWindow,
   onWindowSelect,
   onWindowOpen,
+  scale,
+  onScaleChange,
+  onTogglePet,
+  showPetDog,
 }) => {
   const [time, setTime] = React.useState(new Date());
   const [startMenuOpen, setStartMenuOpen] = useState(false);
@@ -28,6 +36,18 @@ const Taskbar: React.FC<TaskbarProps> = ({
 
   const toggleStartMenu = () => {
     setStartMenuOpen(!startMenuOpen);
+  };
+
+  const handleZoomIn = () => {
+    if (scale < 200) {
+      onScaleChange(scale + 10);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (scale > 100) {
+      onScaleChange(scale - 10);
+    }
   };
 
   return (
@@ -56,6 +76,33 @@ const Taskbar: React.FC<TaskbarProps> = ({
           </button>
         ))}
       </div>
+      
+      <div className="flex items-center mr-4">
+        <button 
+          className="p-1 hover:bg-white/10 rounded-sm mr-1" 
+          onClick={handleZoomOut}
+          title="Zoom Out"
+        >
+          <ZoomOut size={14} className="text-white/80" />
+        </button>
+        <span className="text-white/80 text-xs mx-1">{scale}%</span>
+        <button 
+          className="p-1 hover:bg-white/10 rounded-sm ml-1" 
+          onClick={handleZoomIn}
+          title="Zoom In"
+        >
+          <ZoomIn size={14} className="text-white/80" />
+        </button>
+      </div>
+      
+      <button 
+        className="p-1 hover:bg-white/10 rounded-sm mr-3" 
+        onClick={onTogglePet}
+        title={showPetDog ? "Remove Dog" : "Add Dog"}
+      >
+        <PlusCircle size={14} className="text-white/80" />
+      </button>
+      
       <div className="text-white/80 text-xs flex items-center">
         <Clock size={14} className="mr-1" />
         {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
