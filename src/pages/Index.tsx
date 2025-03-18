@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   FolderOpen,
   Github,
@@ -12,7 +13,6 @@ import {
   Cat,
   Coffee,
   Info,
-  Palette,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import AnimatedDesktopIcon from "@/components/AnimatedDesktopIcon";
@@ -21,9 +21,7 @@ import Taskbar from "@/components/Taskbar";
 import Projects from "@/components/Projects";
 import AboutMe from "@/components/AboutMe";
 import PixelCat from "@/components/PixelCat";
-import PixelDog from "@/components/PixelDog";
 import AboutSite from "@/components/AboutSite";
-import CustomizeWindow, { CustomSettings } from "@/components/CustomizeWindow";
 import { motion } from "framer-motion";
 
 // Define our window types
@@ -39,61 +37,6 @@ type IconPosition = {
   [key: string]: { x: number; y: number };
 };
 
-// Preset layouts
-const layoutPresets = {
-  default: {
-    icons: {
-      projects: { x: 40, y: 40 },
-      aboutMe: { x: 40, y: 150 },
-      travel: { x: 40, y: 260 },
-      music: { x: 40, y: 370 },
-      cats: { x: 40, y: 480 },
-      coffee: { x: 40, y: 590 },
-      customize: { x: 40, y: 700 },
-    },
-    social: {
-      github: { x: 0, y: 40 },
-      linkedin: { x: 0, y: 150 },
-      twitter: { x: 0, y: 260 },
-      instagram: { x: 0, y: 370 },
-    }
-  },
-  centered: {
-    icons: {
-      projects: { x: 0, y: 40 },
-      aboutMe: { x: 0, y: 150 },
-      travel: { x: 0, y: 260 },
-      music: { x: 0, y: 370 },
-      cats: { x: 0, y: 480 },
-      coffee: { x: 0, y: 590 },
-      customize: { x: 0, y: 700 },
-    },
-    social: {
-      github: { x: 0, y: 40 },
-      linkedin: { x: 0, y: 150 },
-      twitter: { x: 0, y: 260 },
-      instagram: { x: 0, y: 370 },
-    }
-  },
-  minimal: {
-    icons: {
-      projects: { x: 40, y: 40 },
-      aboutMe: { x: 40, y: 130 },
-      travel: { x: 40, y: 220 },
-      music: { x: 40, y: 310 },
-      cats: { x: 40, y: 400 },
-      coffee: { x: 40, y: 490 },
-      customize: { x: 40, y: 580 },
-    },
-    social: {
-      github: { x: 0, y: 40 },
-      linkedin: { x: 0, y: 130 },
-      twitter: { x: 0, y: 220 },
-      instagram: { x: 0, y: 310 },
-    }
-  }
-};
-
 const Index = () => {
   const isMobile = useIsMobile();
   
@@ -102,134 +45,14 @@ const Index = () => {
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
   
   // State for icon positions
-  const [iconPositions, setIconPositions] = useState<IconPosition>(layoutPresets.default.icons);
-  
-  // State for social media icon positions
-  const [socialPositions, setSocialPositions] = useState<IconPosition>(layoutPresets.default.social);
-  
-  // State for interface customization
-  const [customSettings, setCustomSettings] = useState<CustomSettings>({
-    scale: 150, // Default zoom at 150%
-    colorScheme: "momo", // Default theme
-    animationSpeed: "normal",
-    layout: "default",
+  const [iconPositions, setIconPositions] = useState<IconPosition>({
+    projects: { x: 40, y: 40 },
+    aboutMe: { x: 40, y: 150 },
+    travel: { x: 40, y: 260 },
+    music: { x: 40, y: 370 },
+    cats: { x: 40, y: 480 },
+    coffee: { x: 40, y: 590 },
   });
-  
-  // State for controlling pets
-  const [showPetDog, setShowPetDog] = useState(false);
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-    height: typeof window !== 'undefined' ? window.innerHeight : 800
-  });
-  
-  // Update window dimensions on resize
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
-  // Update icon positions based on current layout and window size
-  const updateLayoutPositions = useCallback(() => {
-    const { width } = windowDimensions;
-    const scaledWidth = width * (100 / customSettings.scale);
-    const currentLayout = customSettings.layout;
-    
-    // Calculate positions based on layout
-    if (currentLayout === "centered") {
-      // Center the icons horizontally
-      const centerX = scaledWidth / 2 - 60;
-      const iconsCentered = { ...layoutPresets.centered.icons };
-      Object.keys(iconsCentered).forEach((key, index) => {
-        iconsCentered[key] = { x: centerX, y: 40 + index * 110 };
-      });
-      setIconPositions(iconsCentered);
-      
-      // Social icons on right
-      const rightX = scaledWidth - 120;
-      const socialCentered = { ...layoutPresets.centered.social };
-      Object.keys(socialCentered).forEach((key, index) => {
-        socialCentered[key] = { x: rightX, y: 40 + index * 110 };
-      });
-      setSocialPositions(socialCentered);
-    } 
-    else if (currentLayout === "minimal") {
-      // Use minimal preset with smaller spacing
-      const iconsMinimal = { ...layoutPresets.minimal.icons };
-      setIconPositions(iconsMinimal);
-      
-      // Social icons on right with minimal spacing
-      const rightX = scaledWidth - 120;
-      const socialMinimal = { ...layoutPresets.minimal.social };
-      Object.keys(socialMinimal).forEach((key, index) => {
-        socialMinimal[key] = { x: rightX, y: 40 + index * 90 };
-      });
-      setSocialPositions(socialMinimal);
-    }
-    else {
-      // Default layout
-      const iconsDefault = { ...layoutPresets.default.icons };
-      setIconPositions(iconsDefault);
-      
-      const rightX = scaledWidth - 120;
-      const socialDefault = { ...layoutPresets.default.social };
-      Object.keys(socialDefault).forEach((key, index) => {
-        socialDefault[key] = { x: rightX, y: 40 + index * 110 };
-      });
-      setSocialPositions(socialDefault);
-    }
-  }, [customSettings.layout, customSettings.scale, windowDimensions]);
-  
-  // Apply layout changes when layout or scale changes
-  useEffect(() => {
-    updateLayoutPositions();
-  }, [customSettings.layout, customSettings.scale, updateLayoutPositions]);
-  
-  // Set initial social icon positions and apply theme
-  useEffect(() => {
-    if (!isMobile) {
-      updateLayoutPositions();
-    }
-    
-    // Apply theme
-    document.documentElement.dataset.theme = customSettings.colorScheme;
-  }, [isMobile, updateLayoutPositions, customSettings.colorScheme]);
-  
-  // Watch for scale changes to check if we need to switch to mobile view
-  useEffect(() => {
-    const checkViewport = () => {
-      if (!isMobile) {
-        const scaledWidth = window.innerWidth * (100 / customSettings.scale);
-        const scaledHeight = window.innerHeight * (100 / customSettings.scale);
-        
-        // If the scaled viewport can't fit essential content, force a reasonable scale
-        if (scaledWidth < 600 || scaledHeight < 400) {
-          if (customSettings.scale > 180) {
-            setCustomSettings({...customSettings, scale: 180});
-          }
-        }
-      }
-    };
-    
-    checkViewport();
-    window.addEventListener('resize', checkViewport);
-    return () => window.removeEventListener('resize', checkViewport);
-  }, [customSettings.scale, isMobile]);
-  
-  // Handle applying custom settings
-  const handleApplyCustomSettings = (settings: CustomSettings) => {
-    // Apply all settings: scale, colorScheme, animationSpeed, and layout
-    setCustomSettings(settings);
-    
-    // Apply specific theme-related changes based on color scheme
-    document.documentElement.dataset.theme = settings.colorScheme;
-  };
 
   // Define all possible windows
   const allWindows: Record<string, WindowType> = {
@@ -330,17 +153,6 @@ const Index = () => {
       content: <AboutSite />,
       initialPosition: { x: 200, y: 150 },
     },
-    customize: {
-      id: "customize",
-      title: "Customize",
-      content: (
-        <CustomizeWindow 
-          onApplyChanges={handleApplyCustomSettings} 
-          currentSettings={customSettings}
-        />
-      ),
-      initialPosition: { x: 250, y: 120 },
-    },
   };
 
   // Function to open a window
@@ -367,19 +179,6 @@ const Index = () => {
     });
   };
   
-  // Function to update social icon position
-  const updateSocialPosition = (id: string, position: { x: number; y: number }) => {
-    setSocialPositions({
-      ...socialPositions,
-      [id]: position,
-    });
-  };
-  
-  // Toggle showing the dog pet
-  const togglePetDog = () => {
-    setShowPetDog(!showPetDog);
-  };
-  
   // Mobile version
   if (isMobile) {
     return (
@@ -404,7 +203,6 @@ const Index = () => {
                   {id === "cats" && <Cat size={16} className="mr-2" />}
                   {id === "coffee" && <Coffee size={16} className="mr-2" />}
                   {id === "about" && <Info size={16} className="mr-2" />}
-                  {id === "customize" && <Palette size={16} className="mr-2" />}
                   {window.title}
                 </h2>
               </motion.div>
@@ -412,78 +210,38 @@ const Index = () => {
           </div>
           
           <div className="mt-8 grid grid-cols-4 gap-4">
-            <motion.a 
-              href="https://github.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
               <Github size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Github</span>
-            </motion.a>
-            <motion.a 
-              href="https://linkedin.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
               <Linkedin size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">LinkedIn</span>
-            </motion.a>
-            <motion.a 
-              href="https://twitter.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
               <Twitter size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Twitter</span>
-            </motion.a>
-            <motion.a 
-              href="https://instagram.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
               <Instagram size={24} className="text-desktop-icon mb-1" />
               <span className="text-xs">Instagram</span>
-            </motion.a>
+            </a>
           </div>
           
           {openWindows.length > 0 && (
-            <motion.div 
-              className="mt-8 fixed inset-0 bg-black/90 z-50 overflow-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <div className="mt-8 fixed inset-0 bg-black/90 z-50 overflow-auto">
               <div className="p-4">
-                <motion.button 
+                <button 
                   className="mb-4 px-3 py-1 bg-desktop-accent text-white rounded text-sm"
                   onClick={() => setOpenWindows([])}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   Back
-                </motion.button>
-                <motion.div 
-                  className="bg-desktop-window border border-desktop-border rounded-md p-4"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
+                </button>
+                <div className="bg-desktop-window border border-desktop-border rounded-md p-4">
                   {allWindows[openWindows[0]].content}
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
@@ -493,19 +251,14 @@ const Index = () => {
   // Desktop version
   return (
     <div 
-      className="h-screen w-full relative overflow-hidden bg-desktop-dark" 
+      className="h-screen w-full relative overflow-hidden" 
       style={{ 
         backgroundImage: 'url("/seoul-pixelated.jpg")', 
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        imageRendering: 'pixelated',
-        transform: `scale(${customSettings.scale / 100})`,
-        transformOrigin: 'top left',
-        height: `${100 * (100 / customSettings.scale)}vh`,
-        width: `${100 * (100 / customSettings.scale)}vw`
+        imageRendering: 'pixelated'
       }}
       onClick={() => setActiveWindow(null)}
-      data-theme={customSettings.colorScheme}
     >
       {/* Desktop Icons */}
       <div onClick={(e) => e.stopPropagation()}>
@@ -557,62 +310,62 @@ const Index = () => {
           position={iconPositions.coffee}
           onPositionChange={(pos) => updateIconPosition("coffee", pos)}
         />
-        <AnimatedDesktopIcon
-          name="Customize"
-          icon={<Palette size={32} className="text-desktop-icon" />}
-          onClick={() => openWindow("customize")}
-          isActive={activeWindow === "customize"}
-          position={iconPositions.customize}
-          onPositionChange={(pos) => updateIconPosition("customize", pos)}
-        />
       </div>
 
-      {/* Social Media Icons - Now Draggable */}
-      <div onClick={(e) => e.stopPropagation()}>
-        <AnimatedDesktopIcon
-          name="Github"
-          icon={<Github size={32} className="text-desktop-icon" />}
-          onClick={() => window.open("https://github.com", "_blank")}
-          position={socialPositions.github}
-          onPositionChange={(pos) => updateSocialPosition("github", pos)}
-        />
-        <AnimatedDesktopIcon
-          name="LinkedIn"
-          icon={<Linkedin size={32} className="text-desktop-icon" />}
-          onClick={() => window.open("https://linkedin.com", "_blank")}
-          position={socialPositions.linkedin}
-          onPositionChange={(pos) => updateSocialPosition("linkedin", pos)}
-        />
-        <AnimatedDesktopIcon
-          name="Twitter"
-          icon={<Twitter size={32} className="text-desktop-icon" />}
-          onClick={() => window.open("https://twitter.com", "_blank")}
-          position={socialPositions.twitter}
-          onPositionChange={(pos) => updateSocialPosition("twitter", pos)}
-        />
-        <AnimatedDesktopIcon
-          name="Instagram"
-          icon={<Instagram size={32} className="text-desktop-icon" />}
-          onClick={() => window.open("https://instagram.com", "_blank")}
-          position={socialPositions.instagram}
-          onPositionChange={(pos) => updateSocialPosition("instagram", pos)}
-        />
+      {/* Social Media Icons */}
+      <div className="absolute top-6 right-6 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+        <motion.a 
+          href="https://github.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <div className="desktop-icon">
+            <Github size={32} className="text-desktop-icon" />
+            <div className="desktop-icon-text">Github</div>
+          </div>
+        </motion.a>
+        <motion.a 
+          href="https://linkedin.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <div className="desktop-icon">
+            <Linkedin size={32} className="text-desktop-icon" />
+            <div className="desktop-icon-text">LinkedIn</div>
+          </div>
+        </motion.a>
+        <motion.a 
+          href="https://twitter.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <div className="desktop-icon">
+            <Twitter size={32} className="text-desktop-icon" />
+            <div className="desktop-icon-text">Twitter</div>
+          </div>
+        </motion.a>
+        <motion.a 
+          href="https://instagram.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <div className="desktop-icon">
+            <Instagram size={32} className="text-desktop-icon" />
+            <div className="desktop-icon-text">Instagram</div>
+          </div>
+        </motion.a>
       </div>
 
-      {/* Pixel Pets */}
-      <PixelCat 
-        scale={customSettings.scale} 
-        colorScheme={customSettings.colorScheme}
-        animationSpeed={customSettings.animationSpeed}
-      />
-      
-      {showPetDog && (
-        <PixelDog 
-          scale={customSettings.scale} 
-          colorScheme={customSettings.colorScheme}
-          animationSpeed={customSettings.animationSpeed}
-        />
-      )}
+      {/* Roaming Pixel Cat */}
+      <PixelCat />
 
       {/* Windows */}
       <div onClick={(e) => e.stopPropagation()}>
@@ -640,10 +393,6 @@ const Index = () => {
         activeWindow={activeWindow}
         onWindowSelect={setActiveWindow}
         onWindowOpen={openWindow}
-        scale={customSettings.scale}
-        onScaleChange={(newScale) => setCustomSettings({...customSettings, scale: newScale})}
-        onTogglePet={togglePetDog}
-        showPetDog={showPetDog}
       />
     </div>
   );
