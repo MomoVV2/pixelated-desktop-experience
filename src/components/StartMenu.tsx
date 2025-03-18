@@ -37,6 +37,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onOpenWindow }) 
       label: "Projects",
       onClick: () => handleItemClick("projects"),
     },
+    /*
     {
       id: "travel",
       icon: <Image size={16} />,
@@ -67,6 +68,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onOpenWindow }) 
       label: "About This Site",
       onClick: () => handleItemClick("about"),
     },
+        */
   ];
   
   // Different language versions of menu items
@@ -110,7 +112,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onOpenWindow }) 
             transition={{ duration: 0.2 }}
           >
             <div className="p-3 bg-desktop-accent font-pixel text-xs text-white">
-              Personal Portfolio OS
+              Momo.OS
             </div>
             <div className="py-2">
               {menuItems.map((item) => (

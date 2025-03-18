@@ -71,7 +71,7 @@ const Index = () => {
       content: <AboutMe />,
       initialPosition: { x: 150, y: 120 },
     },
-       /*
+    /*
     travel: {
       id: "travel",
       title: "Travel",
@@ -282,6 +282,7 @@ const Index = () => {
           position={iconPositions.aboutMe}
           onPositionChange={(pos) => updateIconPosition("aboutMe", pos)}
         />
+        {/* Desktop Icons 
         <AnimatedDesktopIcon
           name="Travel"
           icon={<Image size={32} className="text-desktop-icon" />}
@@ -314,6 +315,7 @@ const Index = () => {
           position={iconPositions.coffee}
           onPositionChange={(pos) => updateIconPosition("coffee", pos)}
         />
+        */}
       </div>
 
       {/* Social Media Icons */}

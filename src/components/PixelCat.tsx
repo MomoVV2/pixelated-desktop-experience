@@ -13,10 +13,10 @@ interface PixelCatProps {
 
 const messages = [
   "Meow! Need coffee?",
-  "Coding time!",
-  "Seoul is beautiful!",
+  "Are you waiting on something?",
+  "Seoul on top",
   "I love jazz too!",
-  "K-pop is life!",
+  "Listen to Tabber!",
   "Click on some folders!",
   "안녕하세요!",
   "こんにちは!",
