@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { motion, PanInfo } from "framer-motion";
+import { motion, PanInfo, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface AnimatedDesktopIconProps {
